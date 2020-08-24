@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sms.domain.DataDomain;
+import com.sms.exception.SmsException;
 import com.sms.model.InputRequest;
 import com.sms.repository.DataRepository;
 import com.sms.util.SmsUtil;
@@ -16,66 +17,89 @@ public class SmsService {
 	@Autowired
 	private DataRepository dataRepository;
 
-	
-	public List<InputRequest> getAllData() {
-		List<DataDomain> findAll = dataRepository.findAll();
-		List<InputRequest> response = new ArrayList<>();
-		findAll.forEach(it -> {
-			InputRequest ir = convertToResponse(it);
-			response.add(ir);
-		});
-		return response;
-	}
+	public List<InputRequest> getAllData() throws SmsException {
+		try {
+			List<DataDomain> findAll = dataRepository.findAll();
+			List<InputRequest> response = new ArrayList<>();
+			findAll.forEach(it -> {
+				InputRequest ir = convertToResponse(it);
+				response.add(ir);
+			});
 
-	public void saveData(final List<InputRequest> data) {
-		data.stream().forEach(it -> {
-			DataDomain dd = convertToDomain(it);
-			dataRepository.save(dd);
-		});
-	}
-
-	public List<InputRequest> getDataByDates(final String startDate, final String enddate) {
-		List<DataDomain> fetchDateRange = dataRepository.fetchDateRange(
-				SmsUtil.convertStringDate(startDate),
-				SmsUtil.convertStringDate(enddate));
-		List<InputRequest> response = new ArrayList<>();
-		fetchDateRange.forEach(it -> {
-			InputRequest ir = convertToResponse(it);
-			response.add(ir);
-		});
-		return response;
-	}
-
-	public List<InputRequest> deleteById(final Integer id) {
-		dataRepository.deleteById(id);
-		List<DataDomain> findAll = dataRepository.findAll();
-		List<InputRequest> response = new ArrayList<>();
-		findAll.forEach(it -> {
-			InputRequest ir = convertToResponse(it);
-			response.add(ir);
-		});
-		return response;
-	}
-
-	public List<InputRequest> updateData(final InputRequest data) {
-		DataDomain dd = convertToDomain(data);
-		dataRepository.save(dd);
-		List<DataDomain> findAll = null;
-		if (data.getSelectEndDateRange().length() > 6
-				&& data.getSelectStartDateRange().length() > 6) {
-			findAll = dataRepository.fetchDateRange(
-					SmsUtil.convertStringDate(data.getSelectStartDateRange()),
-					SmsUtil.convertStringDate(data.getEnd_date()));
-		} else {
-			findAll = dataRepository.findAll();
+			return response;
+		} catch (Exception e) {
+			throw new SmsException("Something Went wrong while fetching");
 		}
+	}
 
-		List<InputRequest> response = new ArrayList<>();
-		findAll.forEach(it -> {
-			InputRequest ir = convertToResponse(it);
-			response.add(ir);
-		});
-		return response;
+	public void saveData(final List<InputRequest> data) throws SmsException {
+		try {
+			data.stream().forEach(it -> {
+				DataDomain dd = convertToDomain(it);
+				dataRepository.save(dd);
+			});
+		} catch (Exception e) {
+			throw new SmsException("Something Went wrong while Saving");
+		}
+	}
+
+	public List<InputRequest> getDataByDates(final String startDate,
+			final String enddate) throws SmsException {
+		try {
+			List<DataDomain> fetchDateRange = dataRepository.fetchDateRange(
+					SmsUtil.convertStringDate(startDate),
+					SmsUtil.convertStringDate(enddate));
+			List<InputRequest> response = new ArrayList<>();
+			fetchDateRange.forEach(it -> {
+				InputRequest ir = convertToResponse(it);
+				response.add(ir);
+			});
+			return response;
+		} catch (Exception e) {
+			throw new SmsException(
+					"Something Went wrong while fetching by given dates");
+		}
+	}
+
+	public List<InputRequest> deleteById(final Integer id) throws SmsException {
+		try {
+			dataRepository.deleteById(id);
+			List<DataDomain> findAll = dataRepository.findAll();
+			List<InputRequest> response = new ArrayList<>();
+			findAll.forEach(it -> {
+				InputRequest ir = convertToResponse(it);
+				response.add(ir);
+			});
+			return response;
+		} catch (Exception e) {
+			throw new SmsException("Something Went wrong while deleting");
+		}
+	}
+
+	public List<InputRequest> updateData(final InputRequest data)
+			throws SmsException {
+		try {
+			DataDomain dd = convertToDomain(data);
+			dataRepository.save(dd);
+			List<DataDomain> findAll = null;
+			if (data.getSelectEndDateRange().length() > 6
+					&& data.getSelectStartDateRange().length() > 6) {
+				findAll = dataRepository.fetchDateRange(SmsUtil
+						.convertStringDate(data.getSelectStartDateRange()),
+						SmsUtil.convertStringDate(data.getEnd_date()));
+			} else {
+				findAll = dataRepository.findAll();
+			}
+
+			List<InputRequest> response = new ArrayList<>();
+			findAll.forEach(it -> {
+				InputRequest ir = convertToResponse(it);
+				response.add(ir);
+			});
+			return response;
+		} catch (Exception e) {
+			throw new SmsException("Something Went wrong while Updating");
+		}
 
 	}
 

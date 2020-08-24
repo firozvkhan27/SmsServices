@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sms.exception.SmsException;
 import com.sms.model.InputRequest;
 import com.sms.service.SmsService;
 
@@ -25,18 +26,20 @@ public class SmsController {
 	/**
 	 * Api to Save all the data present in the data.json in given problem statement
 	 * @return List of response
+	 * @throws SmsException 
 	 */
 	@PostMapping()
-	public boolean save(@RequestBody final List<InputRequest> data)  {
+	public boolean save(@RequestBody final List<InputRequest> data) throws SmsException  {
 		service.saveData(data);
 		return true;
 	}
 	/**
 	 * Api to Update data 
 	 * @return List of response
+	 * @throws SmsException 
 	 */
 	@PutMapping()
-	public List<InputRequest> update(@RequestBody final InputRequest data)  {
+	public List<InputRequest> update(@RequestBody final InputRequest data) throws SmsException  {
 		return service.updateData(data);
 	}
 	/**
@@ -52,17 +55,19 @@ public class SmsController {
 	/**
 	 * Api to Fetch alldata from the database
 	 * @return List of response
+	 * @throws SmsException 
 	 */
 	@GetMapping("/all")
-	public  List<InputRequest> getAll()  {
+	public  List<InputRequest> getAll() throws SmsException  {
 		return service.getAllData();
 	}
 	/**
 	 * Api to Fetch data Basis on the selected dates
 	 * @return List of response
+	 * @throws SmsException 
 	 */
 	@GetMapping("/selectRange")
-	public  List<InputRequest> filterByDates(@RequestParam("start_date")final String startDate,@RequestParam("end_date") final String end_date)  {
+	public  List<InputRequest> filterByDates(@RequestParam("start_date")final String startDate,@RequestParam("end_date") final String end_date) throws SmsException  {
 		return service.getDataByDates(startDate,end_date);
 	}
 	
