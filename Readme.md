@@ -17,6 +17,8 @@ Run the springboot application
 
 ####2 all data is present in data.json file in resource folder copy the data and pass it to Step 1 payload 
 
+### 3 Once data loaded run the UI app {SmsReactApp} present in the Repository
+
 
 
 
